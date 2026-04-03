@@ -12,11 +12,11 @@ class hutils:
         if not isinstance(_hxvv, str): raise err.IsNotString(_hxvv)
 
         hxv = _hxvv.lower()
-        result = 0
 
         if hxv[:2] != "0x": raise err.IsNotHex(hxv)
         if hxv[2:] == "": raise err.HexIncompleted(hxv)
 
+        result = 0
         hx_inv = hxv[::-1]
         mul = 1
         for i in range(len(hx_inv)-2): #-2 é por causa de 0x
@@ -50,6 +50,19 @@ class hutils:
             if not hutils.ishex(other): raise err.IsNotHex(other)
             return func(other)
         return wrapper
+    
+    @staticmethod
+    def SelectTypes(funcs: tuple[function], required: tuple[object], other: any) -> Hex:
+        if len(funcs) != len(required): raise err.IncompatibleSize(funcs, required)
+        select = None;
+        for i in range(len(funcs)):
+            if isinstance(other, required[i]): 
+                select = funcs[i]
+                break
+        else:
+            raise err.UnknownType(other)
+        
+        return select(other)
 
     def __new__(cls): raise err.InstantiableClass(cls)
 
@@ -86,24 +99,59 @@ class Hex:
     
     def __add__(self, other: int | str | Hex) -> Hex:
         @hutils.positiveInt
-        def __isInteger(other: int): 
+        def __isInteger(other: int) -> Hex: 
             result = self.__integerv + other
             return Hex(integer=result)
         
         @hutils.Hexing
-        def __isString(other: str): 
+        def __isString(other: str) -> Hex: 
             integer, _ = hutils.read_hex(other)
             result = integer + self.__integerv
             return Hex(integer=result)
     
-        def __isHex(other: Hex): 
+        def __isHex(other: Hex) -> Hex: 
             result = self.__integerv + other.__integerv
             return Hex(integer=result)
 
-        if isinstance(other, int):  return __isInteger(other)
-        elif isinstance(other, str): return __isString(other)
-        elif isinstance(other, Hex): return __isHex(other)
-        else: raise er.UnknownType(other)
+        return hutils.SelectTypes((__isInteger, __isString, __isHex), (int, str, Hex), other)
     
-    def __radd__(self, other):
+    def __radd__(self, other: int | str | Hex) -> Hex:
         return self.__add__(other)
+    
+    def __iadd__(self, other): #must be implemented after
+        pass
+    
+    def __sub__(self, other: int | str | Hex, right=False) -> Hex: 
+
+        @hutils.positiveInt
+        def __isInteger(other: int) -> Hex:
+            if right: result = other - self.__integerv
+            else: result = self.__integerv - other
+
+            if result < 0: raise err.NegativeInteger(result)
+            return Hex(integer=result)
+        
+        @hutils.Hexing
+        def __isString(other: str) -> Hex: 
+            value, _ = hutils.read_hex(other)
+            
+            if right: result = value - self.__integerv
+            else: result = self.__integerv - value
+
+            if result < 0: raise err.NegativeInteger(result)
+
+            return Hex(integer=result)
+
+        def __isHex(other: Hex) -> Hex: 
+            if right: result = other.__integerv - self.__integerv
+            else: result = self.__integerv - other.__integerv
+
+            return Hex(integer=result)
+
+        return hutils.SelectTypes((__isInteger, __isString, __isHex), (int, str, Hex), other)
+        
+    def __rsub__(self, other: int | str | Hex) -> Hex:
+        return self.__sub__(other, right=True)
+    
+    def __isub__(self, other): #must be implemented after
+        pass

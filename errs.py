@@ -37,3 +37,7 @@ class InstantiableClass(Exception):
     def __init__(self, value):
         self.value = value
         super().__init__(f"\033[31mThe class '{self.value}' can't be initialized")
+
+class IncompatibleSize(Exception):
+    def __init__(self, value1, value2):
+        super().__init__(f"\033[31mThe size of '{value1}: {len(value1)}' isn't equal to '{value2}: {len(value2)}'")

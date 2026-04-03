@@ -33,6 +33,13 @@ h5 = h2 + 16 + "0xf" + Hex(integer=1) # 64
 print(h5) # 0x40
 ```
 
+## Sub
+The `__sub__` method has the same properties as `__add__`, with a few differences: the result cannot be negative.
+```python
+h6 = 34 - h2 - "0x1" - Hex(integer=1) # 0
+print(h6) # 0x0
+```
+
 ---
 
 ## Author
