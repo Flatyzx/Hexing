@@ -40,6 +40,17 @@ h6 = 34 - h2 - "0x1" - Hex(integer=1) # 0
 print(h6) # 0x0
 ```
 
+## Self-Increase and Decrease
+To add to the class itself, you can use the `__iadd__` or `__isub__` methods. Or, in simpler terms: (**+=** or **-=**).
+```python
+h1 += "0x9" + Hex(hexvalue="0x6") # 32
+print(h1) # 0x20
+
+h2 -= "0x10" - Hex(integer=4) # 20
+print(h2) # 0x14
+```
+**IMPORTANT**: Remember that in subtraction, the order of the terms matters a lot and can lead to an unexpected result. So, **Be careful!**
+
 ---
 
 ## Author

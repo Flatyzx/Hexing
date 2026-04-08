@@ -15,3 +15,9 @@ print(h5) # 0x40
 
 h6 = 34 - h2 - "0x1" - Hex(integer=1) # 0
 print(h6) # 0x0
+
+h1 += "0x9" + Hex(hexvalue="0x6") # 32
+print(h1) # 0x20
+
+h2 -= "0x10" - Hex(integer=4) # 20
+print(h2) # 0x14

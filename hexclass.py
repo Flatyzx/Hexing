@@ -6,6 +6,7 @@ hexDictValues: dict = {"0":0, "1":1, "2":2, "3":3, "4":4, "5":5, "6":6,
                         "7":7, "8":8, "9":9, "a":10, "b":11, "c":12, "d":13,
                         "e":14, "f":15}
 
+
 class hutils:
     @staticmethod
     def read_hex(_hxvv: str) -> int:
@@ -29,7 +30,7 @@ class hutils:
         return result, hxv
 
     @staticmethod
-    def ishex(vv) -> bool:
+    def ishex(vv: any) -> bool:
         try: result, _ = hutils.read_hex(vv)
         except (err.IsNotString, err.IsNotHex, err.HexIncompleted) as e:
             return False 
@@ -118,8 +119,10 @@ class Hex:
     def __radd__(self, other: int | str | Hex) -> Hex:
         return self.__add__(other)
     
-    def __iadd__(self, other): #must be implemented after
-        pass
+    def __iadd__(self, other: int | str | Hex) -> Hex:
+        h = self.__add__(other)
+        self.integerv = h.integerv
+        return self
     
     def __sub__(self, other: int | str | Hex, right=False) -> Hex: 
 
@@ -153,5 +156,7 @@ class Hex:
     def __rsub__(self, other: int | str | Hex) -> Hex:
         return self.__sub__(other, right=True)
     
-    def __isub__(self, other): #must be implemented after
-        pass
+    def __isub__(self, other: int | str | Hex) -> Hex:
+        h = self.__sub__(other)
+        self.integerv = h.integerv
+        return self
